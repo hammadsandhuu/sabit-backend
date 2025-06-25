@@ -582,6 +582,14 @@ app.get("/api/health", (req, res) => {
     timestamp: new Date(),
   });
 });
+// Health check endpoint
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Server is running",
+    timestamp: new Date(),
+  });
+});
 
 // Test email endpoint - ADD THIS FOR DEBUGGING
 app.post("/api/test-email", async (req, res) => {
