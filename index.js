@@ -14,7 +14,7 @@ app.use(express.json());
 app.use("/api", shippingRoutes);
 app.use("/auth", authRoutes);
 
-app.get("/api/health", (_, res) => {
+app.get("/", (_, res) => {
   res.json({ success: true, message: "Server is running" });
 });
 
