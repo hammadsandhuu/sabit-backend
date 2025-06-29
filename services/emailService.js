@@ -13,8 +13,21 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// ✅ Helper to create Google Calendar Add Link
+function getGoogleCalendarLink(event) {
+  const title = encodeURIComponent(event.summary);
+  const details = encodeURIComponent(event.description);
+  const location = encodeURIComponent(event.hangoutLink || "");
+  const start = event.start.dateTime.replace(/[-:]/g, "").split(".")[0] + "Z";
+  const end = event.end.dateTime.replace(/[-:]/g, "").split(".")[0] + "Z";
+
+  return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}&sf=true&output=xml`;
+}
+
 async function sendEmails(formData, meetEvent) {
   const meetLink = meetEvent.hangoutLink;
+  const calendarLink = getGoogleCalendarLink(meetEvent);
+
   const meetingDate = new Date(meetEvent.start.dateTime).toLocaleString(
     "en-US",
     {
@@ -32,14 +45,26 @@ async function sendEmails(formData, meetEvent) {
     from: { name: "Premium Shipping", address: process.env.GMAIL_USER },
     to: formData.userEmail,
     subject: "✅ Your Consultation is Confirmed",
-    html: getCustomerEmailTemplate(formData, meetEvent, meetingDate, meetLink),
+    html: getCustomerEmailTemplate(
+      formData,
+      meetEvent,
+      meetingDate,
+      meetLink,
+      calendarLink
+    ),
   };
 
   const adminMailOptions = {
     from: { name: "Shipping System", address: process.env.GMAIL_USER },
     to: process.env.ADMIN_EMAIL,
     subject: `🚨 New Booking: ${formData.userName}`,
-    html: getAdminEmailTemplate(formData, meetEvent, meetingDate, meetLink),
+    html: getAdminEmailTemplate(
+      formData,
+      meetEvent,
+      meetingDate,
+      meetLink,
+      calendarLink
+    ),
   };
 
   await transporter.sendMail(customerMailOptions);

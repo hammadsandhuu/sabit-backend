@@ -9,7 +9,6 @@ const { validateForm } = require("../utils/validators");
 
 exports.submitForm = async (req, res) => {
   const formData = req.body;
-
   const validationError = validateForm(formData);
   if (validationError)
     return res.status(400).json({ success: false, message: validationError });

@@ -13,23 +13,20 @@ oauth2Client.setCredentials({
 const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
 async function createGoogleMeet(formData) {
-  const meetingDateTime = new Date(
-    `${formData.selectedDate}T${formData.selectedTime}`
-  );
+  const meetingDateTime = new Date(formData.selectedDate);
   const endDateTime = new Date(meetingDateTime.getTime() + 60 * 60 * 1000);
 
   const event = {
     summary: `Shipping Consultation - ${formData.userName}`,
-    description: `Shipping Consultation Meeting\n\nCustomer: ${formData.userName} (${formData.userEmail})`,
+    description: `Shipping Consultation with ${formData.userName} (${formData.userEmail})`,
     start: {
       dateTime: meetingDateTime.toISOString(),
-      timeZone: "Asia/Karachi",
+      timeZone: "UTC",
     },
-    end: { dateTime: endDateTime.toISOString(), timeZone: "Asia/Karachi" },
-    attendees: [
-      { email: formData.userEmail },
-      { email: process.env.ADMIN_EMAIL },
-    ],
+    end: {
+      dateTime: endDateTime.toISOString(),
+      timeZone: "UTC",
+    },
     conferenceData: {
       createRequest: {
         requestId: `meet-${Date.now()}`,
@@ -46,5 +43,6 @@ async function createGoogleMeet(formData) {
 
   return response.data;
 }
+
 
 module.exports = { createGoogleMeet };
