@@ -5,14 +5,9 @@ const {
   getAllSubmissions,
   getSubmissionById,
 } = require("../models/submissionModel");
-const { validateForm } = require("../utils/validators");
 
 exports.submitForm = async (req, res) => {
   const formData = req.body;
-  const validationError = validateForm(formData);
-  if (validationError)
-    return res.status(400).json({ success: false, message: validationError });
-
   try {
     const meetEvent = await createGoogleMeet(formData);
     await sendEmails(formData, meetEvent);
@@ -30,13 +25,11 @@ exports.submitForm = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Scheduling failed",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Scheduling failed",
+      error: error.message,
+    });
   }
 };
 

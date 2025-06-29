@@ -30,7 +30,7 @@ exports.getCustomerEmailTemplate = (
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>Shipping Consultation Confirmed</title>
+      <title>Your Freight Strategy Call Is Confirmed</title>
       <style>
         :root {
           --primary: #E3DAC9; /* Light color for text and headings */
@@ -52,6 +52,19 @@ exports.getCustomerEmailTemplate = (
           overflow: hidden;
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
+        /* Logo Section */
+        .logo-section {
+          background-color: #1a1a1a;
+          padding: 20px;
+          text-align: center;
+          border-bottom: 1px solid #333;
+        }
+        .logo-section img {
+          max-width: 180px;
+          height: auto;
+          display: block;
+          margin: 0 auto;
+        }
         /* Header */
         .header {
           background-color: #444; /* Neutral background */
@@ -61,71 +74,130 @@ exports.getCustomerEmailTemplate = (
         }
         .header h1 {
           font-size: 28px;
-          font-weight: 600;
-          margin-bottom: 8px;
+          font-weight: 700;
+          margin-bottom: 12px;
           letter-spacing: -0.5px;
-          color: #E3DAC9; /* All headings and main text color as requested */
+          color: #E3DAC9;
+          line-height: 1.2;
         }
-        .header p {
+        .header .subtitle {
           font-size: 16px;
           opacity: 0.9;
-          color: #E3DAC9; /* Ensure paragraph text matches */
+          color: #E3DAC9;
+          margin-bottom: 8px;
+          font-weight: 400;
+        }
+        .celebration {
+          font-size: 20px;
+          margin-bottom: 16px;
         }
         /* Main Content */
         .content {
           padding: 30px;
         }
-        .section {
-          margin-bottom: 30px;
-        }
-        .section h2 {
-          font-size: 20px;
-          color: #E3DAC9; /* Headings also in this color */
+        .content p {
+          font-size: 16px;
+          color: #E3DAC9;
           margin-bottom: 16px;
+          line-height: 1.6;
+        }
+        .content strong {
+          color: #E3DAC9;
           font-weight: 600;
         }
-        .section p {
-          font-size: 16px;
-          color: #E3DAC9; /* Body text in same color for consistency */
-          margin-bottom: 12px;
+        /* Divider */
+        .divider {
+          border-top: 2px solid #444;
+          margin: 30px 0;
+          position: relative;
         }
-        .section ul {
-          color: #E3DAC9; /* Fix for ul color */
+        .divider::before {
+          content: "—";
+          position: absolute;
+          top: -12px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #222;
+          padding: 0 20px;
+          color: #666;
+          font-size: 18px;
         }
-        .section li {
-          color: #E3DAC9; /* Fix for li color */
-        }
-        /* Meeting card */
-        .meeting-card {
+        /* Session Details */
+        .session-details {
           background: #333;
           border-radius: 8px;
           padding: 24px;
           border-left: 4px solid var(--primary2);
+          margin: 20px 0;
         }
-        .meeting-detail {
-          display: flex;
-          align-items: center;
-          padding: 8px 0;
-          border-bottom: 1px solid #444;
-        }
-        .meeting-detail:last-child {
-          border-bottom: none;
-        }
-        .icon {
-          width: 20px;
-          height: 20px;
-          margin-right: 12px;
-          fill: var(--primary2);
-        }
-        .meeting-detail strong {
-          color: var(--primary);
+        .session-details h3 {
+          color: #E3DAC9;
+          font-size: 18px;
+          margin-bottom: 16px;
           font-weight: 600;
-          margin-right: 8px;
+        }
+        .session-details ul {
+          list-style: none;
+          padding: 0;
+        }
+        .session-details li {
+          color: #E3DAC9;
+          margin-bottom: 8px;
+          font-size: 16px;
+        }
+        /* Preparation list */
+        .prep-section {
+          background: #333;
+          border-radius: 8px;
+          padding: 20px;
+          margin: 20px 0;
+        }
+        .prep-section h3 {
+          color: #E3DAC9;
+          font-size: 18px;
+          margin-bottom: 16px;
+          font-weight: 600;
+        }
+        .prep-section ul {
+          list-style: none;
+          padding: 0;
+        }
+        .prep-section li {
+          color: #E3DAC9;
+          margin-bottom: 8px;
+          font-size: 16px;
+        }
+        .prep-note {
+          font-style: italic;
+          color: #ccc;
+          margin-top: 12px;
+          font-size: 15px;
+        }
+        /* Important Note */
+        .important-note {
+          background-color: #444;
+          border: 1px solid #666;
+          border-radius: 8px;
+          padding: 20px;
+          margin: 20px 0;
+          color: var(--primary);
+        }
+        .important-note h3 {
+          color: #E3DAC9;
+          font-size: 18px;
+          margin-bottom: 12px;
+          font-weight: 600;
+        }
+        .important-note p {
+          font-size: 16px;
+          color: #E3DAC9;
+          margin-bottom: 12px;
+          line-height: 1.6;
         }
         /* Buttons */
         .button-container {
           text-align: center;
-          margin: 24px 0;
+          margin: 30px 0;
         }
         .btn {
           display: inline-block;
@@ -151,23 +223,39 @@ exports.getCustomerEmailTemplate = (
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        /* Alert box */
-        .alert {
-          background-color: #444;
-          border: 1px solid #666;
-          border-radius: 8px;
-          padding: 20px;
+        /* Social Media Icons */
+        .social-media {
           margin: 20px 0;
-          color: var(--primary);
+          text-align: center;
         }
-        .alert h3 {
-          color: #ffd700; /* Gold for warning */
-          margin-bottom: 8px;
-          font-size: 16px;
+        .social-icons {
+          display: inline-flex;
+          gap: 15px;
+          justify-content: center;
+          align-items: center;
         }
-        .alert p {
-          font-size: 14px;
-          color: #E3DAC9; /* Fix alert paragraph color */
+        .social-icon {
+          display: inline-block;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background-color: #444;
+          text-align: center;
+          line-height: 40px;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          border: 2px solid transparent;
+        }
+        .social-icon:hover {
+          transform: translateY(-2px);
+          border-color: var(--primary2);
+          background-color: #555;
+        }
+        .social-icon svg {
+          width: 20px;
+          height: 20px;
+          fill: #E3DAC9;
+          vertical-align: middle;
         }
         /* Footer */
         .footer {
@@ -176,31 +264,28 @@ exports.getCustomerEmailTemplate = (
           padding: 30px;
           text-align: center;
         }
-        .logo {
-          max-width: 100px;
-          margin-bottom: 12px;
-          display: block !important;
-        }
         .footer p {
-          margin: 8px 0;
+          font-size: 16px;
+          color: #E3DAC9;
+          margin-bottom: 8px;
+          line-height: 1.6;
+        }
+        .footer .website {
+          font-size: 18px;
+          font-weight: 600;
+          margin: 16px 0 8px 0;
+        }
+        .footer .tagline {
           font-size: 14px;
+          color: #999;
         }
         .footer a {
           color: var(--primary2);
-          text-decoration: underline;
+          text-decoration: none;
         }
-        /* Help section contact info */
-        .contact-info {
-          margin-left: 20px; 
+        .footer strong {
           color: #E3DAC9;
-        }
-        .contact-item {
-          display: flex;
-          align-items: center;
-          margin-bottom: 8px;
-        }
-        .contact-item .icon {
-          margin-right: 8px;
+          font-weight: 600;
         }
         /* Responsive */
         @media (max-width: 600px) {
@@ -208,148 +293,129 @@ exports.getCustomerEmailTemplate = (
             margin: 10px;
             border-radius: 8px;
           }
+          .logo-section {
+            padding: 15px 10px;
+          }
+          .logo-section img {
+            max-width: 150px;
+          }
           .header {
             padding: 30px 20px;
           }
           .header h1 {
-            font-size: 24px;
+            font-size: 22px;
+          }
+          .header .subtitle {
+            font-size: 14px;
           }
           .content {
             padding: 20px;
           }
-          .meeting-card {
+          .session-details {
             padding: 16px;
           }
-          .meeting-detail {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
+          .prep-section {
+            padding: 15px 10px;
+          }
+          .important-note {
+            padding: 16px;
           }
           .btn {
             display: block;
             margin: 8px auto;
             text-align: center;
           }
-          .logo {
-            max-width: 80px;
+          .social-icons {
+            gap: 12px;
           }
-          .contact-item {
-            flex-direction: column;
-            align-items: flex-start;
+          .social-icon {
+            width: 36px;
+            height: 36px;
+            line-height: 36px;
+          }
+          .social-icon svg {
+            width: 18px;
+            height: 18px;
           }
         }
       </style>
     </head>
     <body>
       <div class="email-container">
+
         <!-- Header -->
         <div class="header">
-          <h1>✓ Consultation Confirmed</h1>
-          <p style="color: #E3DAC9;">Hello ${
-            formData.userName
-          }, we're all set!</p>
+          <h1>Consultation Confirmed</h1>
         </div>
 
         <!-- Main Content -->
         <div class="content">
-          <!-- Welcome Message -->
-          <div class="section">
-            <p style="font-size: 16px; color: #E3DAC9;">
-              Thank you for scheduling your shipping consultation with our expert team. 
-              We're excited to help you find the best shipping solution for your needs.
-            </p>
-          </div>
+          <p>Hi <strong>${formData.userName}</strong>,</p>
+          
+          <p><strong>You're officially booked for your free 15-minute freight strategy call with a senior advisor from SABIT</strong> — the trusted name in <br/> high-performance logistics.</p>
+          
+          <p>Whether it's your first shipment or you're scaling global operations, this consult is built to expose what's slowing you down, costing you money, or putting cargo at risk — and show you how to fix it.</p>
+          
+          <p><strong>This is not a sales call.</strong></p>
+          
+          <p>It's a tactical consult for serious operators who are done chasing quotes and ready for clarity, speed, and vetted execution.</p>
 
-          <!-- Meeting Details -->
-          <div class="section">
-            <h2>📅 Meeting Information</h2>
-            <div class="meeting-card">
-              <!-- Date with SVG -->
-              <div class="meeting-detail">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-                </svg>
-                <strong style="color: #E3DAC9;">Date:</strong>
-                <span style="color: #E3DAC9;">${meetingDateFormatted}</span>
-              </div>
-              <!-- Time with SVG -->
-              <div class="meeting-detail">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-                </svg>
-                <strong style="color: #E3DAC9;">Time:</strong>
-                <span style="color: #E3DAC9;">${meetingTimeFormatted}</span>
-              </div>
-              <!-- Type with SVG -->
-              <div class="meeting-detail">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 2v-5l-4 2z"/>
-                </svg>
-                <strong style="color: #E3DAC9;">Type:</strong>
-                <span style="color: #E3DAC9;">Google Meet</span>
-              </div>
-            </div>
-            
-            <!-- Action Buttons -->
-            <div class="button-container">
-              <a href="${meetLink}" class="btn btn-primary" style="background-color: #c9f31d !important; color: #000000 !important; text-decoration: none;">Join Meeting</a>
-              <a href="${calendarLink}" class="btn btn-success" style="background-color: #c9f31d !important; color: #000000 !important; text-decoration: none;">Add to Calendar</a>
-            </div>
-          </div>
+          <div class="divider"></div>
 
-          <!-- Before Meeting -->
-          <div class="section">
-            <h2>📋 Before Your Meeting</h2>
-            <p style="color: #E3DAC9;">To make the most of your consultation:</p>
-            <ul style="margin-left: 20px; color: #E3DAC9;">
-              <li>Review the attached shipping details document</li>
-              <li>Prepare any questions about your shipment</li>
-              <li>Have your shipment dimensions and weight ready</li>
-              <li>Test your video/audio setup 5 minutes before the call</li>
+          <!-- Session Details -->
+          <div class="session-details">
+            <h3>🗓 Session Details</h3>
+            <ul>
+              <li>• <strong>Date:</strong> ${meetingDateFormatted}</li>
+              <li>• <strong>Time:</strong> ${meetingTimeFormatted} (your local time)</li>
+              <li>• <strong>Location:</strong> Google Meet (link below)</li>
             </ul>
           </div>
 
-          <!-- Important Notice -->
-          <div class="alert">
-            <h3>⚠️ Important Notice</h3>
-            <p style="color: #E3DAC9;">
-              This consultation slot is reserved exclusively for you and cannot be rescheduled. 
-              Please ensure you're available at the scheduled time. If you need to cancel, 
-              please contact us at least 24 hours in advance.
-            </p>
+          <div class="divider"></div>
+
+          <!-- Preparation Section -->
+          <div class="prep-section">
+            <h3>📂 To move faster, bring what you can:</h3>
+            <ul>
+              <li>• Packing list</li>
+              <li>• Cargo readiness date</li>
+              <li>• Supplier contact</li>
+              <li>• Commercial invoice (if available)</li>
+              <li>• Any shipment goals or questions</li>
+            </ul>
+            <p class="prep-note">If you're missing anything — we'll walk you through it live.</p>
           </div>
 
-          <!-- Help Section -->
-          <div class="section">
-            <h2>💬 Need Help?</h2>
-            <p style="color: #E3DAC9;">If you have any questions or need assistance before your meeting:</p>
-            <div class="contact-info">
-              <div class="contact-item">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                </svg>
-                <span>Email: <a href="mailto:support@yourcompany.com" style="color: var(--primary2);">support@justsabit.com</a></span>
-              </div>
-              <div class="contact-item">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                </svg>
-                <span>Phone: <a href="tel:+15551234567" style="color: var(--primary2);">+1 (555) 123-4567</a></span>
-              </div>
-            </div>
+          <div class="divider"></div>
+
+          <!-- Important Note -->
+          <div class="important-note">
+            <h3>⏳ Important Note:</h3>
+            <p>Out of respect for our team and other booked operators, this session cannot be rescheduled or canceled.</p>
+            <p>We hold time for those serious about solving problems, not window shopping.</p>
           </div>
+
+          <div class="divider"></div>
+
+          <!-- Action Buttons -->
+          <div class="button-container">
+            <a href="${meetLink}" class="btn btn-primary" style="background-color: #c9f31d !important; color: #000000 !important; text-decoration: none;"> Join Meeting</a>
+            <a href="${calendarLink}" class="btn btn-success" style="background-color: #c9f31d !important; color: #000000 !important; text-decoration: none;"> Add to Calendar</a>
+          </div>
+
+          <div class="divider"></div>
+
+          <p>At SABIT, we don't sell freight. <strong>We solve it.</strong></p>
+          <p>We cut through red tape, match you with elite agents, and ship with zero drama.</p>
+          <p><strong>See you in session.</strong></p>
         </div>
         
         <!-- Footer -->
         <div class="footer">
-          <div style="text-align: center;">
-            <img src="cid:logo" alt="Your Company Logo" class="logo" style="max-width: 100px; display: block !important; margin: 0 auto 12px auto;" />
-          </div>
-          <p>© ${new Date().getFullYear()} All rights reserved.</p>
-          <p>
-            <a href="#">Privacy Policy</a> | 
-            <a href="#">Terms of Service</a>
-          </p>
+          <p><strong>The SABIT Advisory Team</strong></p>
+          <p class="website">🌐 <a href="https://www.justsabit.com">www.justsabit.com</a></p>          
+          <p class="tagline">Global Freight | Personal Support</p>
         </div>
       </div>
     </body>
