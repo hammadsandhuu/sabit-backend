@@ -21,7 +21,6 @@ exports.submitForm = async (req, res) => {
     res.json({
       success: true,
       message: "Scheduled successfully",
-      data: submission,
     });
   } catch (error) {
     console.error(error);

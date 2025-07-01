@@ -17,13 +17,15 @@
   "author": "Hammad Sandhu",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.10.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "google-auth-library": "^10.1.0",
     "googleapis": "^126.0.1",
     "nodemailer": "^6.9.7",
-    "pdfkit": "^0.17.1"
+    "pdfkit": "^0.17.1",
+    "zeptomail": "^6.2.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

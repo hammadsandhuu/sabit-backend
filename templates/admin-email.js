@@ -5,8 +5,6 @@ exports.getAdminEmailTemplate = (
   meetLink,
   calendarLink
 ) => {
-  console.log("formData", formData);
-
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-US", {

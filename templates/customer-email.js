@@ -194,10 +194,11 @@ exports.getCustomerEmailTemplate = (
           margin-bottom: 12px;
           line-height: 1.6;
         }
-        /* Buttons */
+        
+        /* Action Buttons */
         .button-container {
           text-align: center;
-          margin: 30px 0;
+          margin: 24px 0;
         }
         .btn {
           display: inline-block;
@@ -215,14 +216,16 @@ exports.getCustomerEmailTemplate = (
           background-color: #c9f31d !important;
           color: #000000 !important;
         }
-        .btn-success {
-          background-color: #c9f31d !important;
-          color: #000000 !important;
+        .btn-secondary {
+          background-color: #444 !important;
+          color: #E3DAC9 !important;
+          border: 1px solid #666;
         }
         .btn:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
+        
         /* Social Media Icons */
         .social-media {
           margin: 20px 0;
@@ -342,11 +345,20 @@ exports.getCustomerEmailTemplate = (
     </head>
     <body>
       <div class="email-container">
-
+        
         <!-- Header -->
         <div class="header">
+          <img
+            src="https://www.justsabit.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo1.da54b973.png&w=256&q=75"
+            alt="SABIT Logo"
+            width="300"
+            height="85"
+            style="display: block; margin: 0 auto 20px; border-radius: 12px;"
+          />
           <h1>Consultation Confirmed</h1>
         </div>
+
+
 
         <!-- Main Content -->
         <div class="content">
@@ -370,6 +382,11 @@ exports.getCustomerEmailTemplate = (
               <li>• <strong>Time:</strong> ${meetingTimeFormatted} (your local time)</li>
               <li>• <strong>Location:</strong> Google Meet (link below)</li>
             </ul>
+          </div>
+          <!-- Action Buttons -->
+          <div class="button-container">
+            <a href="${meetLink}" class="btn btn-primary" style="background-color: #c9f31d !important; color: #000000 !important; text-decoration: none;">Join Meeting</a>
+            <a href="${calendarLink}" class="btn btn-secondary" style="text-decoration: none;">Add to Calendar</a>
           </div>
 
           <div class="divider"></div>
@@ -398,25 +415,37 @@ exports.getCustomerEmailTemplate = (
 
           <div class="divider"></div>
 
-          <!-- Action Buttons -->
-          <div class="button-container">
-            <a href="${meetLink}" class="btn btn-primary" style="background-color: #c9f31d !important; color: #000000 !important; text-decoration: none;"> Join Meeting</a>
-            <a href="${calendarLink}" class="btn btn-success" style="background-color: #c9f31d !important; color: #000000 !important; text-decoration: none;"> Add to Calendar</a>
-          </div>
-
-          <div class="divider"></div>
-
           <p>At SABIT, we don't sell freight. <strong>We solve it.</strong></p>
           <p>We cut through red tape, match you with elite agents, and ship with zero drama.</p>
           <p><strong>See you in session.</strong></p>
         </div>
         
         <!-- Footer -->
-        <div class="footer">
-          <p><strong>The SABIT Advisory Team</strong></p>
-          <p class="website">🌐 <a href="https://www.justsabit.com">www.justsabit.com</a></p>          
-          <p class="tagline">Global Freight | Personal Support</p>
-        </div>
+        <!-- Footer with Rounded Background Social Icons -->
+        <div class="footer" style="background-color: #2c2c2c; color: #ccc; padding: 30px; text-align: center;">        
+          <!-- Rounded Background Social Media Icons -->
+          <div style="margin: 20px 0;">
+            <!-- Instagram -->
+            <a href="https://www.instagram.com/justsabit" target="_blank" style="display: inline-block; margin: 0 6px; background-color: #444; border-radius: 50%; padding: 8px;">
+              <img src="https://img.icons8.com/ios-filled/24/ffffff/instagram-new.png" alt="Instagram" width="20" height="20" style="display: block;" />
+            </a>
+            <!-- Facebook -->
+            <a href="https://www.facebook.com/itsSABIT" target="_blank" style="display: inline-block; margin: 0 6px; background-color: #444; border-radius: 50%; padding: 8px;">
+              <img src="https://img.icons8.com/ios-filled/24/ffffff/facebook-new.png" alt="Facebook" width="20" height="20" style="display: block;" />
+            </a>
+            <!-- TikTok -->
+            <a href="https://www.tiktok.com/@justsabit_" target="_blank" style="display: inline-block; margin: 0 6px; background-color: #444; border-radius: 50%; padding: 8px;">
+              <img src="https://img.icons8.com/ios-filled/24/ffffff/tiktok.png" alt="TikTok" width="20" height="20" style="display: block;" />
+            </a>
+            <!-- YouTube -->
+            <a href="https://www.youtube.com/@justsabit" target="_blank" style="display: inline-block; margin: 0 6px; background-color: #444; border-radius: 50%; padding: 8px;">
+              <img src="https://img.icons8.com/ios-filled/24/ffffff/youtube-play.png" alt="YouTube" width="20" height="20" style="display: block;" />
+            </a>
+          </div>
+        
+          <p class="tagline" style="font-size: 14px; color: #999;">Global Freight | Personal Support</p>
+          <p class="tagline" style="font-size: 14px; color: #999;">© ${new Date().getFullYear()} SABIT — Boutique Freight Advisors</p>
+        </div>        
       </div>
     </body>
     </html>

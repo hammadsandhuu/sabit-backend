@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api", shippingRoutes);
-app.use("/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (_, res) => {
   res.json({ success: true, message: "Server is running" });
