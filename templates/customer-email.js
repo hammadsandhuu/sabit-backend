@@ -351,8 +351,8 @@ exports.getCustomerEmailTemplate = (
           <img
             src="https://www.justsabit.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo1.da54b973.png&w=256&q=75"
             alt="SABIT Logo"
-            width="300"
-            height="85"
+            width="200"
+            height="65"
             style="display: block; margin: 0 auto 20px; border-radius: 12px;"
           />
           <h1>Consultation Confirmed</h1>
@@ -410,7 +410,6 @@ exports.getCustomerEmailTemplate = (
           <div class="important-note">
             <h3>⏳ Important Note:</h3>
             <p>Out of respect for our team and other booked operators, this session cannot be rescheduled or canceled.</p>
-            <p>We hold time for those serious about solving problems, not window shopping.</p>
           </div>
 
           <div class="divider"></div>
