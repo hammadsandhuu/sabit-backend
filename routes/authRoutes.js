@@ -4,7 +4,5 @@ const authController = require("../controllers/authController");
 
 router.get("/google", authController.startAuth);
 router.get("/google/callback", authController.handleCallback);
-router.get("/zoho", authController.startAuth);
-router.get("/zoho/callback", authController.handleCallback);
 
 module.exports = router;

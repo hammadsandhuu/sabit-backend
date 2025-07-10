@@ -1,25 +1,37 @@
-const submissions = [];
+// models/submissionModel.js
+const mongoose = require("mongoose");
 
-function addSubmission(data) {
-  const submission = {
-    id: Date.now(),
-    ...data,
-    createdAt: new Date(),
-  };
-  submissions.push(submission);
-  return submission;
-}
+const submissionSchema = new mongoose.Schema(
+  {
+    userName: { type: String, required: true },
+    userEmail: { type: String, required: true },
+    selectedDate: { type: Date, required: true },
+    selectedTime: { type: String, required: true },
+    meetingLink: { type: String },
+    calendarLink: { type: String },
+    eventId: { type: String },
+    shippingType: { type: String },
+    freightType: { type: String },
+    serviceType: { type: String },
+    handlingType: { type: String },
+    packagingHelp: { type: String },
+    locationInput: { type: String },
+    deliveryAddress: { type: String },
+    containerType: { type: String },
+    readyTime: { type: String },
+    portOfLoading: { type: String },
+    portOfDischarge: { type: String },
+    cbm: { type: String },
+    weight: { type: String },
+    weightUnit: { type: String },
+    volume: { type: String },
+    dimensionLength: { type: String },
+    dimensionWidth: { type: String },
+    dimensionHeight: { type: String },
+    dimensionUnit: { type: String },
+    submittedAt: { type: Date, default: Date.now },
+  },
+  { timestamps: true }
+);
 
-function getAllSubmissions() {
-  return submissions;
-}
-
-function getSubmissionById(id) {
-  return submissions.find((s) => s.id === Number.parseInt(id));
-}
-
-module.exports = {
-  addSubmission,
-  getAllSubmissions,
-  getSubmissionById,
-};
+module.exports = mongoose.model("Submission", submissionSchema);
