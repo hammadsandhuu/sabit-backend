@@ -72,8 +72,6 @@ exports.getBookingsByDate = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Date is required" });
     }
-
-    // Start and end of the day (based on UTC)
     const start = new Date(date + "T00:00:00.000Z");
     const end = new Date(date + "T23:59:59.999Z");
 
