@@ -65,7 +65,7 @@ exports.getSubmission = async (req, res) => {
 
 exports.getBookingsByDate = async (req, res) => {
   try {
-    const { date } = req.query; // Expecting format: YYYY-MM-DD
+    const { date } = req.query;
 
     if (!date) {
       return res
