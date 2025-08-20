@@ -1,18 +1,10 @@
 const { google } = require("googleapis");
-
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
-);
-
-oauth2Client.setCredentials({
-  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-});
-
-const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+const { getAuthorizedClient } = require("./googleAuthService");
 
 async function createGoogleMeet(formData) {
+  const oauth2Client = await getAuthorizedClient();
+  const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+
   const meetingDateTime = new Date(formData.selectedDate);
   const endDateTime = new Date(meetingDateTime.getTime() + 60 * 60 * 1000);
 
@@ -27,6 +19,13 @@ async function createGoogleMeet(formData) {
       dateTime: endDateTime.toISOString(),
       timeZone: "UTC",
     },
+    attendees: [
+      {
+        email: process.env.ADMIN_EMAIL, // ✅ Only Admin invited
+        responseStatus: "accepted",
+      },
+      // ❌ Do not add user here → they will "ask to join"
+    ],
     conferenceData: {
       createRequest: {
         requestId: `meet-${Date.now()}`,
@@ -39,10 +38,10 @@ async function createGoogleMeet(formData) {
     calendarId: "primary",
     resource: event,
     conferenceDataVersion: 1,
+    sendUpdates: "all", // ensures admin gets official calendar invite
   });
 
   return response.data;
 }
-
 
 module.exports = { createGoogleMeet };

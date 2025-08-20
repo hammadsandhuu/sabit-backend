@@ -87,7 +87,7 @@ async function sendEmails(formData, meetEvent) {
           },
         },
       ],
-      subject: `🚨 New Booking: ${formData.userName}`,
+      subject: `New Booking: ${formData.userName}`,
       htmlbody: adminHtml,
     },
     {

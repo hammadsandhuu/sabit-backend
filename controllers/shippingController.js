@@ -6,6 +6,16 @@ exports.submitForm = async (req, res) => {
   const formData = req.body;
 
   try {
+    const selectedDate = new Date(formData.selectedDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot select a past date.",
+      });
+    }
     const meetEvent = await createGoogleMeet(formData);
     await sendEmails(formData, meetEvent);
 
@@ -14,9 +24,7 @@ exports.submitForm = async (req, res) => {
       meetingLink: meetEvent.hangoutLink,
       eventId: meetEvent.id,
     });
-
     await submission.save();
-
     res.json({
       success: true,
       message: "Scheduled successfully",
@@ -30,6 +38,7 @@ exports.submitForm = async (req, res) => {
     });
   }
 };
+
 
 exports.getSubmissions = async (req, res) => {
   try {
