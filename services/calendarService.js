@@ -21,10 +21,9 @@ async function createGoogleMeet(formData) {
     },
     attendees: [
       {
-        email: process.env.ADMIN_EMAIL, // ✅ Only Admin invited
+        email: process.env.ADMIN_EMAIL,
         responseStatus: "accepted",
       },
-      // ❌ Do not add user here → they will "ask to join"
     ],
     conferenceData: {
       createRequest: {
@@ -38,7 +37,7 @@ async function createGoogleMeet(formData) {
     calendarId: "primary",
     resource: event,
     conferenceDataVersion: 1,
-    sendUpdates: "all", // ensures admin gets official calendar invite
+    sendUpdates: "all",
   });
 
   return response.data;

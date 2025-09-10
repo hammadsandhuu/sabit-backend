@@ -18,10 +18,12 @@ function getGoogleCalendarLink(event) {
 async function sendEmails(formData, meetEvent) {
   const meetLink = meetEvent.hangoutLink;
   const calendarLink = getGoogleCalendarLink(meetEvent);
-  const meetingDate = new Date(meetEvent.start.dateTime).toLocaleString(
+
+  // ✅ User timezone (jo form se aaya)
+  const meetingDateUser = new Date(meetEvent.start.dateTime).toLocaleString(
     "en-US",
     {
-      timeZone: "Asia/Karachi",
+      timeZone: formData.userTimeZone || "UTC",
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -30,26 +32,45 @@ async function sendEmails(formData, meetEvent) {
       minute: "2-digit",
     }
   );
+
+  // ✅ Admin timezone (always KSA)
+  const meetingDateAdmin = new Date(meetEvent.start.dateTime).toLocaleString(
+    "en-US",
+    {
+      timeZone: "Asia/Riyadh",
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }
+  );
+
   const from = {
     address: "noreply@justsabit.com",
     name: "SABIT Freight Strategy Call",
   };
+
+  // ✅ Customer email (user timezone)
   const customerHtml = getCustomerEmailTemplate(
     formData,
     meetEvent,
-    meetingDate,
-    meetLink,
-    calendarLink
-  );
-  const adminHtml = getAdminEmailTemplate(
-    formData,
-    meetEvent,
-    meetingDate,
+    meetingDateUser, // 👈 Pass user timezone date
     meetLink,
     calendarLink
   );
 
-  // ✅ Send Customer Email
+  // ✅ Admin email (KSA timezone)
+  const adminHtml = getAdminEmailTemplate(
+    formData,
+    meetEvent,
+    meetingDateAdmin, // 👈 Pass KSA timezone date
+    meetLink,
+    calendarLink
+  );
+
+  // Send Customer Email
   await axios.post(
     ZEPTO_API_URL,
     {
@@ -74,7 +95,7 @@ async function sendEmails(formData, meetEvent) {
     }
   );
 
-  // ✅ Send Admin Email
+  // Send Admin Email
   await axios.post(
     ZEPTO_API_URL,
     {

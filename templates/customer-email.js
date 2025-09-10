@@ -20,10 +20,25 @@ exports.getCustomerEmailTemplate = (
     // Input already includes AM/PM, so display as is
     return timeStr;
   };
+  const getFriendlyTimeZone = (tz) => {
+    try {
+      const date = new Date();
+      const options = {
+        timeZone: tz,
+        timeZoneName: "long", // "long" = e.g. "Pakistan Standard Time"
+      };
+      const formatter = new Intl.DateTimeFormat("en-US", options);
+      const parts = formatter.formatToParts(date);
+      const tzName = parts.find((p) => p.type === "timeZoneName");
+      return tzName ? tzName.value : tz;
+    } catch (e) {
+      return tz; // fallback if timezone not valid
+    }
+  };
 
   const meetingDateFormatted = formatDate(formData.selectedDate);
   const meetingTimeFormatted = formatTime(formData.selectedTime);
-
+  const friendlyTZ = getFriendlyTimeZone(formData.userTimeZone);
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -375,14 +390,19 @@ exports.getCustomerEmailTemplate = (
           <div class="divider"></div>
 
           <!-- Session Details -->
+          <!-- Session Details -->
           <div class="session-details">
-            <h3>🗓 Session Details</h3>
-            <ul>
-              <li>• <strong>Date:</strong> ${meetingDateFormatted}</li>
-              <li>• <strong>Time:</strong> ${meetingTimeFormatted} (your local time)</li>
-              <li>• <strong>Location:</strong> Google Meet (link below)</li>
-            </ul>
+            <h3>✅ Your Consultation is Confirmed</h3>
+            <p>
+              📅 <strong>${meetingDateFormatted}</strong><br/>
+              ⏰ <strong>${meetingTimeFormatted}</strong> ${friendlyTZ}<br/>
+              📍 <strong>Google Meet</strong> (link below)
+            </p>
+            <p style="margin-top: 16px; color: #ccc; font-size: 15px;">
+              We’ve locked in your consultation. Please mark your calendar — your SABIT advisor will meet you at the scheduled time.
+            </p>
           </div>
+
           <!-- Action Buttons -->
           <div class="button-container">
             <a href="${meetLink}" class="btn btn-primary" style="background-color: #c9f31d !important; color: #000000 !important; text-decoration: none;">Join Meeting</a>

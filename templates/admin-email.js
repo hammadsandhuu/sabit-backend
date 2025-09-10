@@ -5,30 +5,59 @@ exports.getAdminEmailTemplate = (
   meetLink,
   calendarLink
 ) => {
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", {
+  // Dynamic friendly timezone name
+  const getFriendlyTimeZone = (tz) => {
+    try {
+      const date = new Date();
+      const options = { timeZone: tz, timeZoneName: "long" };
+      const formatter = new Intl.DateTimeFormat("en-US", options);
+      const parts = formatter.formatToParts(date);
+      const tzName = parts.find((p) => p.type === "timeZoneName");
+      return tzName ? tzName.value : tz;
+    } catch (e) {
+      return tz; // fallback
+    }
+  };
+
+  // Format meeting date/time in admin timezone
+  const adminTimeZone = process.env.ADMIN_TIMEZONE || "Asia/Riyadh"; // default KSA
+  const meetingDateAdmin = new Date(formData.selectedDate).toLocaleString(
+    "en-US",
+    {
+      timeZone: adminTimeZone,
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
-    });
-  };
+      hour: "2-digit",
+      minute: "2-digit",
+    }
+  );
 
-  const formatTime = (timeStr) => {
-    return timeStr;
-  };
+  // Format meeting date/time in user timezone
+  const meetingDateUser = new Date(formData.selectedDate).toLocaleString(
+    "en-US",
+    {
+      timeZone: formData.userTimeZone,
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }
+  );
 
-  const meetingDateFormatted = formatDate(formData.selectedDate);
-  const meetingTimeFormatted = formatTime(formData.selectedTime);
+  const userTimeZoneName = getFriendlyTimeZone(formData.userTimeZone);
+  const adminTimeZoneName = getFriendlyTimeZone(adminTimeZone);
 
-  // Helper function to create info rows only if value exists
+  // Helper function to create info rows
   const infoRow = (label, value, icon = "") => {
     if (!value || value.trim() === "") return "";
     return `
       <div class="info-row">
-        <div class="info-label">${icon} ${label} ${" "}</div>
-        <div class="info-value"> ${value}</div>
+        <div class="info-label">${icon} ${label}</div>
+        <div class="info-value">${value}</div>
       </div>
     `;
   };
@@ -54,7 +83,6 @@ exports.getAdminEmailTemplate = (
     }
     return "";
   };
-
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -237,7 +265,7 @@ exports.getAdminEmailTemplate = (
           font-size: 14px;
           margin-left:10px;
           flex: 2;
-          text-align: right;
+          text-align: left;
         }
         
         /* Divider */
@@ -402,35 +430,32 @@ exports.getAdminEmailTemplate = (
           </div>
 
           <!-- Customer Information -->
-<!-- Customer Information -->
-<div class="section">
-  <h2>👤 Customer Information</h2>
-  <div class="freight-details">
-    <div class="info-row">
-      <div class="info-label">Customer Name</div>
-      <div class="info-value"> ${formData.userName}</div>
-    </div>
-    <div class="info-row">
-      <div class="info-label">Email Address</div>
-      <div class="info-value"> ${formData.userEmail}</div>
-    </div>
-  </div>
-</div>
+          <div class="section">
+            <h2>👤 Customer Information</h2>
+            <div class="freight-details">
+              <div class="info-row">
+                <div class="info-label">Customer Name</div>
+                <div class="info-value"> ${formData.userName}</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">Customer Name</div>
+                <div class="info-value"> ${userTimeZoneName}</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">Email Address</div>
+                <div class="info-value"> ${formData.userEmail}</div>
+              </div>
+            </div>
+          </div>
 
 
           <!-- Meeting Schedule -->
           <div class="section">
             <h2>📅 Meeting Schedule</h2>
             <div class="meeting-card">
-              <div class="meeting-detail">
-                <span>📅 <strong> ${meetingDateFormatted}</strong></span>
-              </div>
-              <div class="meeting-detail">
-                <span>🕐 <strong> ${meetingTimeFormatted}</strong> (local time)</span>
-              </div>
-              <div class="meeting-detail">
-                <span>📍 <strong> Google Meet</strong> (link below)</span>
-              </div>
+              <div class="info-row"><div class="info-label">Admin Local Time</div><div class="info-value">${meetingDateAdmin} (${adminTimeZoneName})</div></div>
+              <div class="info-row"><div class="info-label">User Local Time</div><div class="info-value">${meetingDateUser} (${userTimeZoneName})</div></div>
+              <div class="info-row"><div class="info-label">Location</div><div class="info-value">Google Meet</div></div>
             </div>
           </div>
 
