@@ -1,5 +1,5 @@
 {
-  "name": "shipping-backend",
+  "name": "just-sabit",
   "version": "1.0.0",
   "description": "Backend for shipping form with Google Meet integration",
   "main": "server.js",
