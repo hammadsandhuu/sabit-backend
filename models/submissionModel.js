@@ -5,14 +5,14 @@ const submissionSchema = new mongoose.Schema(
   {
     userName: { type: String, required: true },
     userEmail: { type: String, required: true },
-    selectedDate: { type: Date, required: true }, // Meeting UTC date
-    selectedTime: { type: String, required: true }, // Original time input
-    selectedTimeLocal: { type: String }, // Localized user time (e.g., 9:00 AM)
-    userTimeZone: { type: String }, // User timezone (e.g., Asia/Karachi)
+    selectedDate: { type: Date, required: true },
+    selectedTime: { type: String, required: true },
+    selectedTimeLocal: { type: String },
+    userTimeZone: { type: String },
 
-    meetingLink: { type: String }, // Google Meet link
-    calendarLink: { type: String }, // Google Calendar link
-    eventId: { type: String }, // Google Calendar event ID
+    meetingLink: { type: String },
+    calendarLink: { type: String },
+    eventId: { type: String },
 
     shippingType: { type: String },
     freightType: { type: String },
@@ -20,8 +20,8 @@ const submissionSchema = new mongoose.Schema(
     handlingType: { type: String },
     packagingHelp: { type: String },
 
-    locationInput: { type: String }, // Pickup
-    deliveryAddress: { type: String }, // Delivery
+    locationInput: { type: String },
+    deliveryAddress: { type: String },
 
     containerType: { type: String },
     readyTime: { type: String },

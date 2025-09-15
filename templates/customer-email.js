@@ -37,7 +37,7 @@ exports.getCustomerEmailTemplate = (
   };
 
   const meetingDateFormatted = formatDate(formData.selectedDate);
-  const meetingTimeFormatted = formatTime(formData.selectedTime);
+  const meetingTimeFormatted = formatTime(formData.selectedTimeLocal);
   const friendlyTZ = getFriendlyTimeZone(formData.userTimeZone);
   return `
     <!DOCTYPE html>
@@ -392,7 +392,7 @@ exports.getCustomerEmailTemplate = (
           <!-- Session Details -->
           <!-- Session Details -->
           <div class="session-details">
-            <h3>✅ Your Consultation is Confirmed</h3>
+            <h3>Your Consultation is Confirmed</h3>
             <p>
               📅 <strong>${meetingDateFormatted}</strong><br/>
               ⏰ <strong>${meetingTimeFormatted}</strong> ${friendlyTZ}<br/>

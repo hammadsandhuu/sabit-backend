@@ -21,35 +21,22 @@ exports.getAdminEmailTemplate = (
 
   // Format meeting date/time in admin timezone
   const adminTimeZone = process.env.ADMIN_TIMEZONE || "Asia/Riyadh"; // default KSA
-  const meetingDateAdmin = new Date(formData.selectedDate).toLocaleString(
-    "en-US",
-    {
-      timeZone: adminTimeZone,
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }
-  );
+  const meetingDateAdmin = `${new Date(
+    formData.selectedDate
+  ).toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}, ${formData.selectedTime}`;
 
-  // Format meeting date/time in user timezone
-  const meetingDateUser = new Date(formData.selectedDate).toLocaleString(
+  const meetingDateUser = `${new Date(formData.selectedDate).toLocaleDateString(
     "en-US",
-    {
-      timeZone: formData.userTimeZone,
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }
-  );
+    { weekday: "long", year: "numeric", month: "long", day: "numeric" }
+  )}, ${formData.selectedTimeLocal}`;
 
   const userTimeZoneName = getFriendlyTimeZone(formData.userTimeZone);
-  const adminTimeZoneName = getFriendlyTimeZone(adminTimeZone);
+  const adminTimeZoneName = getFriendlyTimeZone("Asia/Riyadh");
 
   // Helper function to create info rows
   const infoRow = (label, value, icon = "") => {
@@ -438,13 +425,13 @@ exports.getAdminEmailTemplate = (
                 <div class="info-value"> ${formData.userName}</div>
               </div>
               <div class="info-row">
-                <div class="info-label">Customer Name</div>
-                <div class="info-value"> ${userTimeZoneName}</div>
-              </div>
-              <div class="info-row">
                 <div class="info-label">Email Address</div>
                 <div class="info-value"> ${formData.userEmail}</div>
               </div>
+              <div class="info-row">
+              <div class="info-label">Customer Time Zone</div>
+              <div class="info-value">${userTimeZoneName}</div>
+            </div>            
             </div>
           </div>
 
@@ -455,7 +442,7 @@ exports.getAdminEmailTemplate = (
             <div class="meeting-card">
               <div class="info-row"><div class="info-label">Admin Local Time</div><div class="info-value">${meetingDateAdmin} (${adminTimeZoneName})</div></div>
               <div class="info-row"><div class="info-label">User Local Time</div><div class="info-value">${meetingDateUser} (${userTimeZoneName})</div></div>
-              <div class="info-row"><div class="info-label">Location</div><div class="info-value">Google Meet</div></div>
+              <div class="info-row"><div class="info-label">Meeting Location</div><div class="info-value">Google Meet</div></div>
             </div>
           </div>
 

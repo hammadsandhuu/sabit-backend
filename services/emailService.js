@@ -19,7 +19,7 @@ async function sendEmails(formData, meetEvent) {
   const meetLink = meetEvent.hangoutLink;
   const calendarLink = getGoogleCalendarLink(meetEvent);
 
-  // ✅ User timezone (jo form se aaya)
+  // User timezone (jo form se aaya)
   const meetingDateUser = new Date(meetEvent.start.dateTime).toLocaleString(
     "en-US",
     {
@@ -33,7 +33,7 @@ async function sendEmails(formData, meetEvent) {
     }
   );
 
-  // ✅ Admin timezone (always KSA)
+  // Admin timezone (always KSA)
   const meetingDateAdmin = new Date(meetEvent.start.dateTime).toLocaleString(
     "en-US",
     {
@@ -52,20 +52,20 @@ async function sendEmails(formData, meetEvent) {
     name: "SABIT Freight Strategy Call",
   };
 
-  // ✅ Customer email (user timezone)
+  // Customer email (user timezone)
   const customerHtml = getCustomerEmailTemplate(
     formData,
     meetEvent,
-    meetingDateUser, // 👈 Pass user timezone date
+    meetingDateUser,
     meetLink,
     calendarLink
   );
 
-  // ✅ Admin email (KSA timezone)
+  //  Admin email (KSA timezone)
   const adminHtml = getAdminEmailTemplate(
     formData,
     meetEvent,
-    meetingDateAdmin, // 👈 Pass KSA timezone date
+    meetingDateAdmin,
     meetLink,
     calendarLink
   );

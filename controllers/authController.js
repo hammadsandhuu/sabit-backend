@@ -280,11 +280,11 @@ const getSuccessPage = () => `
             </svg>
         </div>
         
-        <h1>🎉 Authentication Successful!</h1>
+        <h1>Authentication Successful!</h1>
         <p class="subtitle">Your Google account has been successfully connected to Sabit</p>
         
         <div class="features">
-            <h3>🚀 What's now enabled:</h3>
+            <h3>What's now enabled:</h3>
             <ul class="feature-list">
                 <li>Google Calendar integration for meetings</li>
                 <li>Gmail integration for notifications</li>
@@ -293,17 +293,8 @@ const getSuccessPage = () => `
             </ul>
         </div>
         
-        <div class="actions">
-            <a href="/dashboard" class="btn btn-primary">
-                📊 Go to Dashboard
-            </a>
-            <a href="/profile" class="btn btn-secondary">
-                ⚙️ Settings
-            </a>
-        </div>
-        
         <div class="timestamp">
-            ✅ Connected successfully at ${new Date().toLocaleString()}
+            Connected successfully at ${new Date().toLocaleString()}
         </div>
     </div>
 
@@ -527,7 +518,7 @@ const getErrorPage = (title, message) => `
             </svg>
         </div>
         
-        <h1>⚠️ ${title}</h1>
+        <h1>${title}</h1>
         <p class="subtitle">We encountered an issue during authentication</p>
         
         <div class="error-details">
@@ -537,15 +528,15 @@ const getErrorPage = (title, message) => `
         
         <div class="actions">
             <a href="/auth/start" class="btn btn-primary">
-                🔄 Try Again
+                Try Again
             </a>
             <a href="/support" class="btn btn-secondary">
-                💬 Get Help
+                Get Help
             </a>
         </div>
         
         <div class="timestamp">
-            ❌ Error occurred at ${new Date().toLocaleString()}
+             Error occurred at ${new Date().toLocaleString()}
         </div>
     </div>
 

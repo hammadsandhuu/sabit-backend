@@ -8,20 +8,17 @@ const createOAuthClient = () =>
     process.env.GOOGLE_CLIENT_SECRET,
     process.env.GOOGLE_REDIRECT_URI
   );
-
-// ✅ Load latest token from DB
 const loadTokens = async () => {
   const tokenDoc = await Token.findOne().sort({ createdAt: -1 });
   return tokenDoc ? tokenDoc.toObject() : null;
 };
 
-// ✅ Save tokens but never overwrite refresh_token if missing
 const saveTokens = async (tokens) => {
   let tokenDoc = await Token.findOne();
 
   if (tokenDoc) {
     if (!tokens.refresh_token) {
-      tokens.refresh_token = tokenDoc.refresh_token; // preserve refresh_token
+      tokens.refresh_token = tokenDoc.refresh_token;
     }
     Object.assign(tokenDoc, tokens);
     await tokenDoc.save();
@@ -29,10 +26,10 @@ const saveTokens = async (tokens) => {
     await Token.create(tokens);
   }
 
-  console.log("✅ Tokens saved in DB safely");
+  console.log("Tokens saved in DB safely");
 };
 
-// 🔑 Get Google Auth URL
+// Get Google Auth URL
 const getAuthUrl = () => {
   const oauth2Client = createOAuthClient();
   const scopes = [
@@ -42,12 +39,12 @@ const getAuthUrl = () => {
 
   return oauth2Client.generateAuthUrl({
     access_type: "offline",
-    prompt: "consent", // ensures refresh_token is returned once
+    prompt: "consent",
     scope: scopes,
   });
 };
 
-// 🔑 Exchange code for tokens
+// Exchange code for tokens
 const getTokensFromCode = async (code) => {
   const oauth2Client = createOAuthClient();
   const { tokens } = await oauth2Client.getToken(code);
@@ -56,30 +53,24 @@ const getTokensFromCode = async (code) => {
   return tokens;
 };
 
-// ✅ Auto-refresh enabled client
+//Auto-refresh enabled client
 const getAuthorizedClient = async () => {
   const oauth2Client = createOAuthClient();
   const storedTokens = await loadTokens();
 
   if (!storedTokens) {
-    throw new Error(
-      "❌ No tokens found. Please authenticate with Google first."
-    );
+    throw new Error("No tokens found. Please authenticate with Google first.");
   }
 
   oauth2Client.setCredentials(storedTokens);
-
-  // ✅ Listen for token refresh and save updated tokens
   oauth2Client.on("tokens", async (tokens) => {
-    console.log("♻️ Token refreshed:", tokens);
+    console.log("Token refreshed:", tokens);
     await saveTokens({ ...storedTokens, ...tokens });
   });
-
-  // ✅ Ensure token is valid before returning client
   try {
-    await oauth2Client.getAccessToken(); // This triggers refresh if expired
+    await oauth2Client.getAccessToken();
   } catch (err) {
-    console.error("⚠️ Error refreshing access token:", err);
+    console.error("Error refreshing access token:", err);
     throw new Error("Google authentication failed, please re-authenticate.");
   }
 
