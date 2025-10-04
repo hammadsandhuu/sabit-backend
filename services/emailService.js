@@ -1,3 +1,4 @@
+// services/emailService.js
 const axios = require("axios");
 const { getCustomerEmailTemplate } = require("../templates/customer-email");
 const { getAdminEmailTemplate } = require("../templates/admin-email");
@@ -6,8 +7,10 @@ const ZEPTO_API_URL = "https://api.zeptomail.sa/v1.1/email";
 const ZEPTO_API_TOKEN = process.env.ZEPTO_API_TOKEN;
 
 function getGoogleCalendarLink(event) {
-  const title = encodeURIComponent(event.summary);
-  const details = encodeURIComponent(event.description);
+  if (!event || !event.start || !event.end) return "";
+
+  const title = encodeURIComponent(event.summary || "SABIT Freight Call");
+  const details = encodeURIComponent(event.description || "");
   const location = encodeURIComponent(event.hangoutLink || "");
   const start = event.start.dateTime.replace(/[-:]/g, "").split(".")[0] + "Z";
   const end = event.end.dateTime.replace(/[-:]/g, "").split(".")[0] + "Z";
@@ -15,44 +18,54 @@ function getGoogleCalendarLink(event) {
   return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}&sf=true&output=xml`;
 }
 
-async function sendEmails(formData, meetEvent) {
-  const meetLink = meetEvent.hangoutLink;
-  const calendarLink = getGoogleCalendarLink(meetEvent);
+async function sendEmails(formData, meetEvent = null) {
+  // Fallbacks if event is missing
+  const meetLink =
+    meetEvent?.hangoutLink || "Meeting link will be shared soon.";
+  const calendarLink = meetEvent ? getGoogleCalendarLink(meetEvent) : "";
 
-  // User timezone (jo form se aaya)
-  const meetingDateUser = new Date(meetEvent.start.dateTime).toLocaleString(
-    "en-US",
-    {
-      timeZone: formData.userTimeZone || "UTC",
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }
-  );
+  // User timezone date
+  const meetingDateUser = meetEvent
+    ? new Date(meetEvent.start.dateTime).toLocaleString("en-US", {
+        timeZone: formData.userTimeZone || "UTC",
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : formData.selectedDate
+    ? new Date(formData.selectedDate).toLocaleString("en-US", {
+        timeZone: formData.userTimeZone || "UTC",
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "To be scheduled";
 
-  // Admin timezone (always KSA)
-  const meetingDateAdmin = new Date(meetEvent.start.dateTime).toLocaleString(
-    "en-US",
-    {
-      timeZone: "Asia/Riyadh",
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }
-  );
+  // Admin timezone date (KSA)
+  const meetingDateAdmin = meetEvent
+    ? new Date(meetEvent.start.dateTime).toLocaleString("en-US", {
+        timeZone: "Asia/Riyadh",
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : meetingDateUser;
 
   const from = {
     address: "noreply@justsabit.com",
     name: "SABIT Freight Strategy Call",
   };
 
-  // Customer email (user timezone)
+  // Build emails
   const customerHtml = getCustomerEmailTemplate(
     formData,
     meetEvent,
@@ -61,7 +74,6 @@ async function sendEmails(formData, meetEvent) {
     calendarLink
   );
 
-  //  Admin email (KSA timezone)
   const adminHtml = getAdminEmailTemplate(
     formData,
     meetEvent,
@@ -84,7 +96,8 @@ async function sendEmails(formData, meetEvent) {
         },
       ],
       subject:
-        "You're Confirmed — SABIT Freight Strategy Call | Google Meet Link Inside",
+        "You're Confirmed — SABIT Freight Strategy Call" +
+        (meetEvent ? " | Google Meet Link Inside" : " (Pending Scheduling)"),
       htmlbody: customerHtml,
     },
     {
@@ -108,7 +121,9 @@ async function sendEmails(formData, meetEvent) {
           },
         },
       ],
-      subject: `New Booking: ${formData.userName}`,
+      subject: `New Booking: ${formData.userName} ${
+        meetEvent ? "" : "(Meet Pending)"
+      }`,
       htmlbody: adminHtml,
     },
     {
@@ -118,6 +133,8 @@ async function sendEmails(formData, meetEvent) {
       },
     }
   );
+
+  console.log("📩 Emails sent successfully!");
 }
 
 module.exports = { sendEmails };

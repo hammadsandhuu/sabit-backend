@@ -1,8 +1,9 @@
+// services/googleMeetService.js
 const { google } = require("googleapis");
 const { getAuthorizedClient } = require("./googleAuthService");
 
 async function createGoogleMeet(formData) {
-  const oauth2Client = await getAuthorizedClient();
+  let oauth2Client = await getAuthorizedClient();
   const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
   const meetingDateTime = new Date(formData.selectedDate);
@@ -13,11 +14,11 @@ async function createGoogleMeet(formData) {
     description: `Shipping Consultation with ${formData.userName} (${formData.userEmail})`,
     start: {
       dateTime: meetingDateTime.toISOString(),
-      timeZone: "UTC",
+      timeZone: formData.userTimeZone || "UTC",
     },
     end: {
       dateTime: endDateTime.toISOString(),
-      timeZone: "UTC",
+      timeZone: formData.userTimeZone || "UTC",
     },
     attendees: [
       {
@@ -33,14 +34,34 @@ async function createGoogleMeet(formData) {
     },
   };
 
-  const response = await calendar.events.insert({
-    calendarId: "primary",
-    resource: event,
-    conferenceDataVersion: 1,
-    sendUpdates: "all",
-  });
+  try {
+    // Try inserting event
+    const response = await calendar.events.insert({
+      calendarId: "primary",
+      resource: event,
+      conferenceDataVersion: 1,
+      sendUpdates: "all",
+    });
 
-  return response.data;
+    return response.data;
+  } catch (err) {
+    console.error("❌ Error creating Google Meet event:", err.message);
+
+    // Retry once if token expired
+    if (err.code === 401 || err.code === 403) {
+      console.log("⚠️ Token expired. Retrying with refreshed token...");
+      oauth2Client = await getAuthorizedClient(); // get fresh client
+      const retryResponse = await calendar.events.insert({
+        calendarId: "primary",
+        resource: event,
+        conferenceDataVersion: 1,
+        sendUpdates: "all",
+      });
+      return retryResponse.data;
+    }
+
+    throw err; // rethrow if it's another error
+  }
 }
 
 module.exports = { createGoogleMeet };
