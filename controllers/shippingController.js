@@ -1,6 +1,10 @@
-const { createGoogleMeet } = require("../services/calendarService");
+// controllers/formController.js
 const { sendEmails } = require("../services/emailService");
 const Submission = require("../models/submissionModel");
+const {
+  checkAuthStatus,
+  createGoogleMeet,
+} = require("../services/calendarService"); // FIXED IMPORT
 
 exports.submitForm = async (req, res) => {
   const formData = req.body;
@@ -16,6 +20,16 @@ exports.submitForm = async (req, res) => {
         message: "You cannot select a past date.",
       });
     }
+
+    const authStatus = await checkAuthStatus();
+    if (!authStatus.valid) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required. Please reconnect Google account.",
+        requiresReauth: true,
+      });
+    }
+
     const meetEvent = await createGoogleMeet(formData);
     await sendEmails(formData, meetEvent);
 
@@ -25,12 +39,23 @@ exports.submitForm = async (req, res) => {
       eventId: meetEvent.id,
     });
     await submission.save();
+
     res.json({
       success: true,
       message: "Scheduled successfully",
+      meetLink: meetEvent.hangoutLink,
     });
   } catch (error) {
     console.error("SubmitForm Error:", error);
+
+    if (error.message.includes("re-authenticate") || error.code === 401) {
+      return res.status(401).json({
+        success: false,
+        message: "Google authentication expired. Please reconnect.",
+        requiresReauth: true,
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: "Scheduling failed",
@@ -39,6 +64,22 @@ exports.submitForm = async (req, res) => {
   }
 };
 
+exports.getAuthStatus = async (req, res) => {
+  try {
+    const status = await checkAuthStatus();
+    res.json({
+      success: status.valid,
+      valid: status.valid,
+      message: status.message,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      valid: false,
+      message: "Unable to check authentication status",
+    });
+  }
+};
 
 exports.getSubmissions = async (req, res) => {
   try {

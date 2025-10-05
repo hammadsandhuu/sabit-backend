@@ -28,13 +28,14 @@ const saveTokens = async (tokens) => {
     Object.assign(tokenDoc, tokens);
     await tokenDoc.save();
   } else {
-    await Token.create(tokens);
+    tokenDoc = await Token.create(tokens);
   }
 
-  console.log("✅ Tokens saved in DB safely");
+  console.log("Tokens saved in DB safely");
+  return tokenDoc.toObject();
 };
 
-// Generate Google Auth URL (one-time use only)
+// Generate Google Auth URL
 const getAuthUrl = () => {
   const oauth2Client = createOAuthClient();
   const scopes = [
@@ -43,13 +44,13 @@ const getAuthUrl = () => {
   ];
 
   return oauth2Client.generateAuthUrl({
-    access_type: "offline", // ensures refresh_token is returned
-    prompt: "consent", // only for the very first time
+    access_type: "offline",
+    prompt: "consent",
     scope: scopes,
   });
 };
 
-// Exchange code for tokens (first time only)
+// Exchange code for tokens
 const getTokensFromCode = async (code) => {
   const oauth2Client = createOAuthClient();
   const { tokens } = await oauth2Client.getToken(code);
@@ -58,34 +59,85 @@ const getTokensFromCode = async (code) => {
   return tokens;
 };
 
-// Get authorized client (auto-refresh enabled)
+// Check token status
+const checkTokenStatus = async () => {
+  try {
+    const oauth2Client = createOAuthClient();
+    const storedTokens = await loadTokens();
+
+    if (!storedTokens || !storedTokens.refresh_token) {
+      return { valid: false, message: "No refresh token found" };
+    }
+
+    oauth2Client.setCredentials(storedTokens);
+
+    // Test token with a simple API call
+    const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+    await calendar.calendarList.list({ maxResults: 1 });
+
+    return { valid: true, message: "Token is valid" };
+  } catch (error) {
+    return {
+      valid: false,
+      message: "Token is invalid or expired",
+      error: error.message,
+    };
+  }
+};
+
 const getAuthorizedClient = async () => {
   const oauth2Client = createOAuthClient();
-  const storedTokens = await loadTokens();
+  let storedTokens = await loadTokens();
 
   if (!storedTokens || !storedTokens.refresh_token) {
     throw new Error(
-      "❌ No refresh token found. Please authenticate with Google first."
+      "No refresh token found. Please authenticate with Google first."
     );
   }
-
   oauth2Client.setCredentials(storedTokens);
-
-  // Auto-save new tokens if refreshed
-  oauth2Client.on("tokens", async (tokens) => {
-    console.log("♻️ Token refreshed:", tokens);
-    await saveTokens({ ...storedTokens, ...tokens });
+  oauth2Client.on("tokens", async (newTokens) => {
+    console.log("Token refreshed automatically");
+    const currentTokens = await loadTokens();
+    const updatedTokens = {
+      ...currentTokens,
+      ...newTokens,
+      refresh_token: newTokens.refresh_token || currentTokens.refresh_token,
+    };
+    await saveTokens(updatedTokens);
   });
 
   try {
-    // Force refresh to validate token
-    await oauth2Client.getAccessToken();
-  } catch (err) {
-    console.error("Error refreshing access token:", err.message);
-    throw new Error("Google authentication failed, please re-authenticate.");
-  }
+    // Validate token with API call
+    const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+    await calendar.calendarList.list({ maxResults: 1 });
+    console.log("Token is valid");
+    return oauth2Client;
+  } catch (error) {
+    console.error("Token validation failed:", error.message);
 
-  return oauth2Client;
+    if (error.code === 401 || error.code === 403) {
+      console.log("Attempting to refresh token...");
+      try {
+        const { credentials } = await oauth2Client.refreshAccessToken();
+        await saveTokens(credentials);
+        console.log("Token refreshed successfully");
+        return oauth2Client;
+      } catch (refreshError) {
+        console.error("Token refresh failed:", refreshError.message);
+        throw new Error(
+          "Google authentication expired. Please re-authenticate."
+        );
+      }
+    }
+
+    throw error;
+  }
 };
 
-module.exports = { getAuthUrl, getTokensFromCode, getAuthorizedClient };
+module.exports = {
+  getAuthUrl,
+  getTokensFromCode,
+  getAuthorizedClient,
+  checkTokenStatus,
+  loadTokens,
+};

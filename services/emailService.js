@@ -19,12 +19,10 @@ function getGoogleCalendarLink(event) {
 }
 
 async function sendEmails(formData, meetEvent = null) {
-  // Fallbacks if event is missing
   const meetLink =
     meetEvent?.hangoutLink || "Meeting link will be shared soon.";
   const calendarLink = meetEvent ? getGoogleCalendarLink(meetEvent) : "";
 
-  // User timezone date
   const meetingDateUser = meetEvent
     ? new Date(meetEvent.start.dateTime).toLocaleString("en-US", {
         timeZone: formData.userTimeZone || "UTC",
@@ -47,7 +45,6 @@ async function sendEmails(formData, meetEvent = null) {
       })
     : "To be scheduled";
 
-  // Admin timezone date (KSA)
   const meetingDateAdmin = meetEvent
     ? new Date(meetEvent.start.dateTime).toLocaleString("en-US", {
         timeZone: "Asia/Riyadh",
@@ -65,7 +62,6 @@ async function sendEmails(formData, meetEvent = null) {
     name: "SABIT Freight Strategy Call",
   };
 
-  // Build emails
   const customerHtml = getCustomerEmailTemplate(
     formData,
     meetEvent,
@@ -82,59 +78,62 @@ async function sendEmails(formData, meetEvent = null) {
     calendarLink
   );
 
-  // Send Customer Email
-  await axios.post(
-    ZEPTO_API_URL,
-    {
-      from,
-      to: [
-        {
-          email_address: {
-            address: formData.userEmail,
-            name: formData.userName,
+  try {
+    await axios.post(
+      ZEPTO_API_URL,
+      {
+        from,
+        to: [
+          {
+            email_address: {
+              address: formData.userEmail,
+              name: formData.userName,
+            },
           },
-        },
-      ],
-      subject:
-        "You're Confirmed — SABIT Freight Strategy Call" +
-        (meetEvent ? " | Google Meet Link Inside" : " (Pending Scheduling)"),
-      htmlbody: customerHtml,
-    },
-    {
-      headers: {
-        Authorization: ZEPTO_API_TOKEN,
-        "Content-Type": "application/json",
+        ],
+        subject:
+          "You're Confirmed — SABIT Freight Strategy Call" +
+          (meetEvent ? " | Google Meet Link Inside" : " (Pending Scheduling)"),
+        htmlbody: customerHtml,
       },
-    }
-  );
+      {
+        headers: {
+          Authorization: ZEPTO_API_TOKEN,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-  // Send Admin Email
-  await axios.post(
-    ZEPTO_API_URL,
-    {
-      from,
-      to: [
-        {
-          email_address: {
-            address: process.env.ADMIN_EMAIL,
-            name: "SABIT Admin",
+    await axios.post(
+      ZEPTO_API_URL,
+      {
+        from,
+        to: [
+          {
+            email_address: {
+              address: process.env.ADMIN_EMAIL,
+              name: "SABIT Admin",
+            },
           },
-        },
-      ],
-      subject: `New Booking: ${formData.userName} ${
-        meetEvent ? "" : "(Meet Pending)"
-      }`,
-      htmlbody: adminHtml,
-    },
-    {
-      headers: {
-        Authorization: ZEPTO_API_TOKEN,
-        "Content-Type": "application/json",
+        ],
+        subject: `New Booking: ${formData.userName} ${
+          meetEvent ? "" : "(Meet Pending)"
+        }`,
+        htmlbody: adminHtml,
       },
-    }
-  );
+      {
+        headers: {
+          Authorization: ZEPTO_API_TOKEN,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-  console.log("📩 Emails sent successfully!");
+    console.log("Emails sent successfully!");
+  } catch (error) {
+    console.error("Error sending emails:", error.message);
+    throw error;
+  }
 }
 
 module.exports = { sendEmails };
