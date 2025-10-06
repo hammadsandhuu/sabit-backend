@@ -1,10 +1,9 @@
-// controllers/formController.js
 const { sendEmails } = require("../services/emailService");
 const Submission = require("../models/submissionModel");
 const {
   checkAuthStatus,
   createGoogleMeet,
-} = require("../services/calendarService"); // FIXED IMPORT
+} = require("../services/calendarService");
 
 exports.submitForm = async (req, res) => {
   const formData = req.body;

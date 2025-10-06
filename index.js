@@ -8,12 +8,14 @@ const PORT = process.env.PORT || 3000;
 
 const shippingRoutes = require("./routes/shippingRoutes");
 const authRoutes = require("./routes/authRoutes");
+const carShippingRoutes = require("./routes/carBookingRoute");
 
 app.use(cors());
 app.use(express.json());
 
 app.use("/api/v1", shippingRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/v1", carShippingRoutes);
 
 app.get("/", (_, res) => {
   res.json({ success: true, message: "Server is running" });
